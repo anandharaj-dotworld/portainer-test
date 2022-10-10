@@ -1,8 +1,14 @@
-version: "3.9"
-services:
-  web:
-    build: .
-    ports:
-      - "8000:5000"
-  redis:
-    image: "redis:alpine"
+# This is a basic example `docker-compose.yml` file using a 3 tier web app.
+
+service: api
+  image: apache:latest
+  links:
+    - db:database
+service: frontend
+  image: ubuntu:latest
+  links:
+    - api
+  ports:
+    - "80:8080"
+service: db
+  image: redis
