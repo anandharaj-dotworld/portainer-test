@@ -26,4 +26,3 @@ WORDPRESS_DB_NAME: wpdb
  
 volumes:
 ["./:/var/www/html"]
-volumes:
