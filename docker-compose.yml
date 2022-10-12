@@ -1,54 +1,7 @@
 version: '3'
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-
-  broker:
-    image: confluentinc/cp-kafka:latest
-    container_name: broker
-    ports:
-      - "9092:9092"
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-
-  emqx:
-    image: emqx/emqx:5.0.3
-    container_name: emqx
-    ports:
-      - "1883:1883"
-      - "18083:18083"
-    environment:
-      - "EMQX_NODE_NAME=emqx@node1.emqx.io"
-      - "EMQX_CLUSTER__DISCOVERY_STRATEGY=static"
-      - "EMQX_CLUSTER__STATIC__SEEDS=[emqx@node1.emqx.io]"
-    healthcheck:
-      test: [ "CMD", "/opt/emqx/bin/emqx_ctl", "status" ]
-      interval: 5s
-      timeout: 25s
-      retries: 5
-    networks:
-      dw-bridge:
-        aliases:
-          - node1.emqx.io
-
   influxdb:
     image: influxdb:latest
     ports:
       - 8086:8086
     restart: always
-
-networks:
-  dw-bridge:
-    driver: bridge
